@@ -25,6 +25,8 @@ public class NettyServer {
 			.option(ChannelOption.SO_BACKLOG, 100)
 			.handler(new LoggingHandler(LogLevel.INFO))
 			.childHandler(new DefaultChildHandler());
+			
+			
 			ChannelFuture future = sb.bind("127.0.0.1", 80).sync();
 			future.channel().closeFuture().sync();
 
