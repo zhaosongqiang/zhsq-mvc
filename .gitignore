@@ -1,3 +1,4 @@
+#Eclipse project files
 /target/
 *.class
 .settings/
@@ -5,3 +6,10 @@
 *.classpath
 *.class
 */target
+
+#Intellij project files
+*.idea
+*.iml
+
+#Other files
+*.a
