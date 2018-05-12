@@ -12,12 +12,18 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 
+/**
+ * @author zhaosq
+ * @date 2018年5月11日
+ */
 public class NettyServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
 		String uri = request.uri();
-		System.out.println(uri);
+		
+		//TODO 这里根据获取到的uri 经过自己的dispatcher 访问自己的控制器 现在已经通过netty的http获取到  http请求了
+		
 		
 		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 		response.headers().set("Content-Type", "text/html;charset=UTF-8");
