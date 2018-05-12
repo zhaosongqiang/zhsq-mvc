@@ -1,0 +1,17 @@
+#Eclipse project files
+/target/
+*.class
+.settings/
+*.project
+*.classpath
+*.class
+*/target
+
+#Intellij project files
+*.idea
+*.iml
+
+#Other files
+*.a
+.gitignore
+*.log

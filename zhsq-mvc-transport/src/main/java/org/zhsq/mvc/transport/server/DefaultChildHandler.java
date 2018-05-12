@@ -1,14 +1,15 @@
 package org.zhsq.mvc.transport.server;
 
-import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import io.netty.channel.ChannelHandlerAdapter;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
 
+/**
+ * @author zhaosq
+ * @date 2018年5月11日
+ */
 public class DefaultChildHandler extends ChannelInitializer<SocketChannel>{
 
 	@Override

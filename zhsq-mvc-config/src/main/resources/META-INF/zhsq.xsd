@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://www.zsq.com/schema/zhsq" xmlns:tool="http://www.springframework.org/schema/tool"
+	targetNamespace="http://www.zsq.com/schema/zhsq">
+
+	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+	<xsd:import namespace="http://www.springframework.org/schema/tool" />
+
+	<xsd:element name="server">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[ 请求监听服务配置 ]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="ip" type="xsd:string" use="required" />
+			<xsd:attribute name="port" type="xsd:integer" use="required" />
+			<xsd:attribute name="name" type="xsd:string" use="optional" />
+			<xsd:attribute name="bossThreads" type="xsd:integer" use="optional" />
+			<xsd:attribute name="workerThreads" type="xsd:integer" use="optional" />
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>
