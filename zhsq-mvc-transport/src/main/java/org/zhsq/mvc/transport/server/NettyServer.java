@@ -10,7 +10,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.internal.StringUtil;
 
 /**
  * 请求监听服务
@@ -19,10 +18,19 @@ import io.netty.util.internal.StringUtil;
  */
 public class NettyServer {
 
-	public void bind (String ip, int port, int boss, int worker) throws ServerBindException {
+	private EventLoopGroup bossGroup;
+	private EventLoopGroup workerGroup;
 
-		EventLoopGroup bossGroup = new NioEventLoopGroup(boss == 0 ? 1 : boss);
-		EventLoopGroup workerGroup = new NioEventLoopGroup(worker);
+	public NettyServer (int boss, int worker) {
+		bossGroup = new NioEventLoopGroup(boss == 0 ? 1 : boss);
+		workerGroup = new NioEventLoopGroup(worker);
+	}
+
+	public void bind (String ip, int port) throws ServerBindException {
+
+		if (bossGroup == null || workerGroup == null) {
+			throw new RuntimeException("请求监听服务绑定失败，未获取到请求处理线程组或者IO读写处理线程组...");
+		}
 
 		try {
 			ServerBootstrap sb = new ServerBootstrap();
@@ -33,18 +41,30 @@ public class NettyServer {
 			.childHandler(new DefaultChildHandler());
 
 			ChannelFuture future = sb.bind(ip, port).sync();
-			future.channel().closeFuture().sync();
+			future.awaitUninterruptibly();
 
+			if (!future.isSuccess()) {
+				future.channel().close().awaitUninterruptibly();
+				throw new RuntimeException("请求监听服务绑定失败: " + ip+":"+port, future.cause());
+			}
 		} catch (InterruptedException e) {
-			throw new ServerBindException("请求监听服务 绑定失败："+e.getMessage(),e);
-		} finally {
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();
+			throw new ServerBindException("请求监听服务 绑定失败："+e.getMessage(),e);
 		}
 	}
 
+
+	/**
+	 * 关闭请求监听服务
+	 */
+	public void shutdown() {
+		bossGroup.shutdownGracefully();
+		workerGroup.shutdownGracefully();
+	}
+
 	public static void main (String[] args) {
-//		new NettyServer().bind("127.0.0.1",80,1,10);
+		//		new NettyServer().bind("127.0.0.1",80,1,10);
 	}
 
 
