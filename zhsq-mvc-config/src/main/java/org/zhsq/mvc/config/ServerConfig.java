@@ -5,6 +5,7 @@ package org.zhsq.mvc.config;
 
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.zhsq.mvc.transport.server.NettyServer;
@@ -17,7 +18,7 @@ import io.netty.util.internal.StringUtil;
  * @date 2018年5月12日
  * @since 1.0
  */
-public class ServerConfig extends AbstractConfig implements ApplicationListener<ContextRefreshedEvent> {
+public class ServerConfig extends AbstractConfig implements ApplicationListener<ContextRefreshedEvent>,DisposableBean {
 
 
 	private static final long serialVersionUID = -3326397664502103849L;
@@ -27,6 +28,8 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 	private static final int MAX_PORT = 65535;
 
 	private static final String DEFAULT_IP = "127.0.0.1";
+
+	private NettyServer nettyServer;
 
 	private String name;
 
@@ -130,7 +133,11 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 	}
 
 	private void startServer() {
-		new NettyServer().bind(ip, port, bossThreads, workerThreads);
+		nettyServer = new NettyServer(bossThreads, workerThreads);
+		nettyServer.bind(ip, port);
+		System.out.println("============================================================");
+		System.out.println("==========请求监听服务绑定成功,监听地址："+ip+":"+port+"==============");
+		System.out.println("============================================================");
 	}
 
 	private void checkPort() {
@@ -141,6 +148,18 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 		}
 		if (port < 0 || port > MAX_PORT) {
 			throw new IllegalArgumentException("端口号必须介于 0 - 66535 之间!");
+		}
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		if (nettyServer != null) {
+			//关闭请求监听服务
+			nettyServer.shutdown();
+			nettyServer = null;
+			System.out.println("============================================================");
+			System.out.println("=========解除请求监听服务绑定成功,监听地址："+ip+":"+port+"============");
+			System.out.println("============================================================");
 		}
 	}
 }
