@@ -30,5 +30,6 @@
 		<module>zhsq-mvc-config</module>
     <module>zhsq-mvc-common</module>
     <module>zhsq-mvc-example</module>
+    <module>zhsq-mvc-handle</module>
   </modules>
 </project>

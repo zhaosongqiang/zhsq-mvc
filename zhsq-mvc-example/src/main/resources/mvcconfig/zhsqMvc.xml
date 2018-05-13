@@ -4,10 +4,25 @@
        http://www.zsq.com/schema/zhsq http://www.zsq.com/schema/zhsq.xsd ">
 
 
-	<zhsq:server ip="127.0.0.1" port="80" />
+	<zhsq:server ip="127.0.0.1" port="80" dispatcherRef="dispatcher" />
 
+	<bean id="testIntercepter" class="org.zhsq.mvc.example.intercepter.TestIntercepter" />
+	<bean id="testFilter" class="org.zhsq.mvc.example.filter.TestFilter" />
 
-
+	<bean id="dispatcher"
+		class="org.zhsq.mvc.handle.dispatcer.HttpRequestDefaultDispatcher">
+		<property name="prefix" value="service" />
+		<property name="interceptors">
+			<list>
+				<ref bean="testIntercepter" />
+			</list>
+		</property>
+		<property name="filters">
+			<list>
+				<ref bean="testFilter" />
+			</list>
+		</property>
+	</bean>
 
 
 </beans>

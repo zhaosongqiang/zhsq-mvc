@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.zhsq.mvc.handle.dispatcer.HttpRequestDefaultDispatcher;
 import org.zhsq.mvc.transport.server.NettyServer;
 
 import io.netty.util.internal.StringUtil;
@@ -40,77 +41,56 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 	private int bossThreads;
 
 	private int workerThreads;
+	//服务接收请求，后的分派处理器
+	private HttpRequestDefaultDispatcher dispatcherRef;
 
-	/**
-	 * @return the name
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @param name the name to set
-	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * @return the ip
-	 */
 	public String getIp() {
 		return ip;
 	}
 
-	/**
-	 * @param ip the ip to set
-	 */
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
 
-	/**
-	 * @return the port
-	 */
 	public int getPort() {
 		return port;
 	}
 
-	/**
-	 * @param port the port to set
-	 */
 	public void setPort(int port) {
 		this.port = port;
 	}
 
-	/**
-	 * @return the bossThreads
-	 */
 	public int getBossThreads() {
 		return bossThreads;
 	}
 
-	/**
-	 * @param bossThreads the bossThreads to set
-	 */
 	public void setBossThreads(int bossThreads) {
 		this.bossThreads = bossThreads;
 	}
 
-	/**
-	 * @return the workerThreads
-	 */
 	public int getWorkerThreads() {
 		return workerThreads;
 	}
 
-	/**
-	 * @param workerThreads the workerThreads to set
-	 */
 	public void setWorkerThreads(int workerThreads) {
 		this.workerThreads = workerThreads;
 	}
 
+	public HttpRequestDefaultDispatcher getDispatcherRef() {
+		return dispatcherRef;
+	}
+
+	public void setDispatcherRef(HttpRequestDefaultDispatcher dispatcherRef) {
+		this.dispatcherRef = dispatcherRef;
+	}
 
 	@Override
 	public String toString() {
@@ -127,13 +107,23 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 
 		checkProperty("ip", ip,PATTERN_IPV4);
 		checkPort();
+		checkDispatcherRef();
 
 		//开启请求监听服务
 		startServer();
 	}
 
+	/**
+	 * 
+	 */
+	private void checkDispatcherRef() {
+		if (dispatcherRef == null) {
+			throw new IllegalArgumentException("必须为zhsq:server 指定dispatcherRef");
+		}
+	}
+
 	private void startServer() {
-		nettyServer = new NettyServer(bossThreads, workerThreads);
+		nettyServer = new NettyServer(bossThreads, workerThreads, dispatcherRef);
 		nettyServer.bind(ip, port);
 		System.out.println("============================================================");
 		System.out.println("==========请求监听服务绑定成功,监听地址："+ip+":"+port+"==============");
