@@ -10,7 +10,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
  * @since 1.0
  */
 public interface HttpIntercepter {
-
+	
 	/**
 	 * 拦截请求
 	 * @param request HTTP请求信息

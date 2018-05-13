@@ -31,9 +31,6 @@ class NettyServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 
 		if (dispatcherRef == null) {
-			//TODO 这里考虑下 dispatcherRef == null 时，该怎么做，给框架使用者提供扩展来捕获这种异常？
-			//如果不让使用者捕获，直接返回错误码，使用者就不容易定位问题 头大啊!
-
 			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 		} else {
 			dispatcherRef.doDispatcher(request, response);

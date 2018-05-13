@@ -1,5 +1,7 @@
-package org.zhsq.mvc.web.suport;
+package org.zhsq.mvc.handle.context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -8,10 +10,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @date 2018年5月13日
  * @since 1.0
  */
-class ZhsqWebApplicationContext {
+public class ZhsqWebApplicationContext {
 	private ApplicationContext rootApplicationContext;
 	private String configLocation;
 	private ClassPathXmlApplicationContext webApplicationContext;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ZhsqWebApplicationContext.class);
+
+
 
 	public ZhsqWebApplicationContext (ApplicationContext parentContext, String configLocation) {
 		this.rootApplicationContext = parentContext;
@@ -27,7 +33,6 @@ class ZhsqWebApplicationContext {
 		webApplicationContext.setParent(rootApplicationContext);
 		webApplicationContext.start();
 	}
-
 
 	public void stop(){
 		if (webApplicationContext != null) {

@@ -15,7 +15,6 @@
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.context.version>5.0.3.RELEASE</spring.context.version>
 		<zhsq.mvc.config.version>0.0.1-SNAPSHOT</zhsq.mvc.config.version>
 	</properties>
 	<dependencies>
@@ -24,12 +23,6 @@
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.context.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.zsq.cn</groupId>
