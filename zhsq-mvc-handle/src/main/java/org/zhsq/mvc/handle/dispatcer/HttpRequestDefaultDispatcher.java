@@ -2,11 +2,18 @@ package org.zhsq.mvc.handle.dispatcer;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.zhsq.mvc.handle.filter.HttpFilter;
+import org.zhsq.mvc.handle.handle.DefaultAnnotationHandlermapping;
 import org.zhsq.mvc.handle.intercepter.HttpIntercepter;
 
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 
 /**
  * HTTP协议请求默认调度控制器
@@ -14,7 +21,11 @@ import io.netty.handler.codec.http.FullHttpResponse;
  * @date 2018年5月11日
  * @since 1.0
  */
-public class HttpRequestDefaultDispatcher implements HttpDispatcher {
+public class HttpRequestDefaultDispatcher implements HttpDispatcher, ApplicationContextAware {
+
+	private ApplicationContext webApplicationContext;
+	private DefaultAnnotationHandlermapping handlermapping;
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestDefaultDispatcher.class);
 
 	/**
 	 * 当请求路径前缀匹配 prefix时调度器才会起作用
@@ -78,27 +89,27 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher {
 				filter.doFilter(request, response);
 			}
 		}
-
 		//TODO 获取handler
+
+		if (handlermapping == null) {
+			if (webApplicationContext != null) {
+				handlermapping = 
+						webApplicationContext.getBean(DefaultAnnotationHandlermapping.class);
+			} else {
+				LOGGER.error("获取hander处理器失败，因为没有对应的webApplicationContext");
+				response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+				return ;
+			}
+		}
+
+		//TODO 获取handler后 如何处理请参考springMvc  注意处理对request.uri()进行 prefix处理 以及参数处理
+		Object handler = handlermapping.getHandler(request.uri());
+
+
 	}
 
-
-
-
-
-
-
-
-
-	//	我觉得是在 dispatcher 中维护自己的 拦截器链和过滤器链 
-	//	包括生成拦截器链和过滤器链  以及 调用下一个 拦截器和过滤器
-
-
-
-
-
-
-
-
-
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		webApplicationContext = applicationContext; 		
+	}
 }

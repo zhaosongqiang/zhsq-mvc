@@ -24,6 +24,8 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.zhsq.mvc.handle.annotation.RequestMapping;
 
+import io.netty.handler.codec.http.FullHttpRequest;
+
 /**
  * webApplicationContext加载后，对org.zhsq.mvc.handle.annotation.RequestMapping注解
  * 的bean 以及方法进行捕获并放入handlerMap，以便后期根据URL获取handler
@@ -224,6 +226,11 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		webApplicationContext = applicationContext;
+	}
+
+
+	public Object getHandler(String requestUri) {
+		return handlerMap.get(requestUri);
 	}
 
 }
