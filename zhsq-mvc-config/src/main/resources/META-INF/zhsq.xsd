@@ -12,10 +12,11 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:attribute name="ip" type="xsd:string" use="required" />
-			<xsd:attribute name="port" type="xsd:integer" use="required" />
+			<xsd:attribute name="port" type="xsd:string" use="required" />
+			<xsd:attribute name="dispatcherRef" type="xsd:string" use="required" />
 			<xsd:attribute name="name" type="xsd:string" use="optional" />
-			<xsd:attribute name="bossThreads" type="xsd:integer" use="optional" />
-			<xsd:attribute name="workerThreads" type="xsd:integer" use="optional" />
+			<xsd:attribute name="bossThreads" type="xsd:string" use="optional" />
+			<xsd:attribute name="workerThreads" type="xsd:string" use="optional" />
 		</xsd:complexType>
 	</xsd:element>
 

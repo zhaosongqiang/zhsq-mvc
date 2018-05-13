@@ -1,5 +1,6 @@
 package org.zhsq.mvc.transport.server;
 
+import org.zhsq.mvc.handle.dispatcer.HttpRequestDefaultDispatcher;
 import org.zhsq.mvc.transport.server.exception.ServerBindException;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -20,10 +21,12 @@ public class NettyServer {
 
 	private EventLoopGroup bossGroup;
 	private EventLoopGroup workerGroup;
+	private HttpRequestDefaultDispatcher dispatcherRef;
 
-	public NettyServer (int boss, int worker) {
-		bossGroup = new NioEventLoopGroup(boss == 0 ? 1 : boss);
-		workerGroup = new NioEventLoopGroup(worker);
+	public NettyServer (int boss, int worker, HttpRequestDefaultDispatcher dispatcherRef) {
+		this.bossGroup = new NioEventLoopGroup(boss == 0 ? 1 : boss);
+		this.workerGroup = new NioEventLoopGroup(worker);
+		this.dispatcherRef = dispatcherRef;
 	}
 
 	public void bind (String ip, int port) throws ServerBindException {
@@ -38,7 +41,7 @@ public class NettyServer {
 			.channel(NioServerSocketChannel.class)
 			.option(ChannelOption.SO_BACKLOG, 100)
 			.handler(new LoggingHandler(LogLevel.INFO))
-			.childHandler(new DefaultChildHandler());
+			.childHandler(new DefaultChildHandler(dispatcherRef));
 
 			ChannelFuture future = sb.bind(ip, port).sync();
 			future.awaitUninterruptibly();
