@@ -29,7 +29,7 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 
 	private static final String DEFAULT_IP = "127.0.0.1";
 
-	private NettyServer nettyServer;
+	private transient NettyServer nettyServer;
 
 	private String name;
 

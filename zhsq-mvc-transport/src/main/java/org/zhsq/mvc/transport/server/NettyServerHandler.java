@@ -16,7 +16,7 @@ import io.netty.util.CharsetUtil;
  * @author zhaosq
  * @date 2018年5月11日
  */
-public class NettyServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+class NettyServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {

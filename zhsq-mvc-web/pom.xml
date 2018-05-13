@@ -17,6 +17,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.context.version>5.0.3.RELEASE</spring.context.version>
 		<zhsq.mvc.transport.version>0.0.1-SNAPSHOT</zhsq.mvc.transport.version>
+		<zhsq.mvc.config.version>0.0.1-SNAPSHOT</zhsq.mvc.config.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -35,6 +36,11 @@
 			<groupId>com.zsq.cn</groupId>
 			<artifactId>zhsq-mvc-transport</artifactId>
 			<version>${zhsq.mvc.transport.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.zsq.cn</groupId>
+			<artifactId>zhsq-mvc-config</artifactId>
+			<version>${zhsq.mvc.config.version}</version>
 		</dependency>
 
 	</dependencies>

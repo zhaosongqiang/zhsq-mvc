@@ -63,9 +63,4 @@ public class NettyServer {
 		workerGroup.shutdownGracefully();
 	}
 
-	public static void main (String[] args) {
-		//		new NettyServer().bind("127.0.0.1",80,1,10);
-	}
-
-
 }

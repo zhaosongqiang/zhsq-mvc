@@ -62,7 +62,7 @@
 
 		<dependency>
 			<groupId>com.zsq.cn</groupId>
-			<artifactId>zhsq-mvc-config</artifactId>
+			<artifactId>zhsq-mvc-web</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
