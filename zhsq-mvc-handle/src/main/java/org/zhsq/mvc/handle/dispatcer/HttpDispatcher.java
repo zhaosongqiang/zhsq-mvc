@@ -10,6 +10,11 @@ import io.netty.handler.codec.http.FullHttpResponse;
  */
 public interface HttpDispatcher {
 
+	/**
+	 * 根据请求信息通过handlerMapping分派请求到controller
+	 * @param request 请求信息
+	 * @param response 响应信息
+	 */
 	void doDispatcher (FullHttpRequest request, FullHttpResponse response);
 
 }

@@ -4,6 +4,8 @@
        http://www.zsq.com/schema/zhsq http://www.zsq.com/schema/zhsq.xsd ">
 
 
+	<bean id="testController" class="org.zhsq.mvc.example.controller.TestController" />
+
 	<zhsq:server ip="127.0.0.1" port="80" dispatcherRef="dispatcher" />
 
 	<bean id="testIntercepter" class="org.zhsq.mvc.example.intercepter.TestIntercepter" />

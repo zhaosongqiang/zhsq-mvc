@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.zhsq.mvc.handle.handle.DefaultAnnotationHandlermapping;
 
 /**
  * @author zhaosq
@@ -14,10 +15,6 @@ public class ZhsqWebApplicationContext {
 	private ApplicationContext rootApplicationContext;
 	private String configLocation;
 	private ClassPathXmlApplicationContext webApplicationContext;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ZhsqWebApplicationContext.class);
-
-
 
 	public ZhsqWebApplicationContext (ApplicationContext parentContext, String configLocation) {
 		this.rootApplicationContext = parentContext;
@@ -32,7 +29,11 @@ public class ZhsqWebApplicationContext {
 		webApplicationContext = new ClassPathXmlApplicationContext(configLocation.split("[,\\s]+"));
 		webApplicationContext.setParent(rootApplicationContext);
 		webApplicationContext.start();
+		//将DefaultAnnotationHandlermapping注册为单实例bean,并调用其init方法对@RequestMapping()注解的bean进行捕获
+		//以便以便后期根据URL获取handler
+		webApplicationContext.getAutowireCapableBeanFactory().createBean(DefaultAnnotationHandlermapping.class);
 	}
+
 
 	public void stop(){
 		if (webApplicationContext != null) {

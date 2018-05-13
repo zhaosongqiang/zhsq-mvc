@@ -8,6 +8,12 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.CharsetUtil;
 
+/**
+ * 测试Filter
+ * @author zhsq 
+ * @date 2018年5月13日
+ * @since 1.0
+ */
 public class TestFilter implements HttpFilter {
 
 	@Override

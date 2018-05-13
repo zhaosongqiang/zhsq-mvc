@@ -10,6 +10,11 @@ import io.netty.handler.codec.http.FullHttpResponse;
  */
 public interface HttpFilter {
 
+	/**
+	 * 执行过滤
+	 * @param request 请求信息
+	 * @param response 响应信息
+	 */
 	void doFilter (FullHttpRequest request, FullHttpResponse response);	
 
 }
