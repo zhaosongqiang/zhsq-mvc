@@ -1,10 +1,12 @@
 package org.zhsq.mvc.handle.handle;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,6 +25,8 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.zhsq.mvc.handle.annotation.RequestMapping;
+
+import io.netty.handler.codec.http.FullHttpRequest;
 
 /**
  * webApplicationContext加载后，对org.zhsq.mvc.handle.annotation.RequestMapping注解
@@ -151,7 +155,16 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 	}
 
 	protected String[] determineUrlsForHandlerMethods(Class<?> handlerType) {
-		return new String[0];
+		//获取@RequestMapping注解的类中的  @RequestMapping 注解的方法 的路径
+		List<String> methodUrls = new ArrayList<>(10);
+		Method[] mehods = handlerType.getDeclaredMethods();
+		for (Method method : mehods) {
+			if (method.isAnnotationPresent(RequestMapping.class)) {
+				RequestMapping mapping = method.getAnnotation(RequestMapping.class);
+				methodUrls.addAll(Arrays.asList(mapping.value()));
+			}
+		}
+		return methodUrls.toArray(new String[0]);
 	}
 
 	public PathMatcher getPathMatcher() {
@@ -224,6 +237,11 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		webApplicationContext = applicationContext;
+	}
+
+
+	public Object getHandler(String requestUri) {
+		return handlerMap.get(requestUri);
 	}
 
 }
