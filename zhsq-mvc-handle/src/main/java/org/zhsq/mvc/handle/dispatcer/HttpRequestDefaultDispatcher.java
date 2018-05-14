@@ -105,6 +105,9 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 		//TODO 获取handler后 如何处理请参考springMvc  注意处理对request.uri()进行 prefix处理 以及参数处理
 		Object handler = handlermapping.getHandler(request.uri());
 
+		//TODO 通过 AnnotationMethodHandler.class 获取methodHandler,需要先将AnnotationMethodHandler.class在ZhsqWebApplicationContext.start()
+		//方法中创建并注册bean
+
 
 	}
 
