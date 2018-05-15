@@ -1,11 +1,8 @@
 package org.zhsq.mvc.handle.context;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.zhsq.mvc.handle.handle.AnnotationMethodHandler;
 import org.zhsq.mvc.handle.handle.DefaultAnnotationHandlermapping;
 
 /**
@@ -43,10 +40,6 @@ public class ZhsqWebApplicationContext {
 		DefaultAnnotationHandlermapping bean = factory.createBean(DefaultAnnotationHandlermapping.class);
 		factory.registerSingleton(DefaultAnnotationHandlermapping.class.getName(), bean);
 
-		//实例化AnnotationMethodHandler.calss的bean对webApplicationContext进行后处理
-		//主要是对webApplicationContext中RequestMapping注解的类和方法解析和缓存
-//		AnnotationMethodHandler bean2 = factory.createBean(AnnotationMethodHandler.class);
-//		factory.registerSingleton(AnnotationMethodHandler.class.getName(), bean2);
 	}
 
 

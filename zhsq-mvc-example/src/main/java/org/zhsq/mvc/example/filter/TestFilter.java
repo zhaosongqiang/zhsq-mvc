@@ -18,12 +18,11 @@ public class TestFilter implements HttpFilter {
 
 	@Override
 	public void doFilter(FullHttpRequest request, FullHttpResponse response) {
-		System.out.println("org.zhsq.mvc.web.filter.HttpFilter");
-		response.headers().set("Content-Type", "text/html;charset=UTF-8");
-		StringBuilder buf = new StringBuilder("hello:zsq333");
-		ByteBuf buffer = Unpooled.copiedBuffer(buf,CharsetUtil.UTF_8);
-		response.content().writeBytes(buffer);
-		buffer.release();
+//		response.headers().set("Content-Type", "text/html;charset=UTF-8");
+//		StringBuilder buf = new StringBuilder("hello:zsq333");
+//		ByteBuf buffer = Unpooled.copiedBuffer(buf,CharsetUtil.UTF_8);
+//		response.content().writeBytes(buffer);
+//		buffer.release();
 	}
 
 }
