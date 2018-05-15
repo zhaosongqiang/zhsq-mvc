@@ -20,13 +20,10 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.zhsq.mvc.handle.annotation.RequestMapping;
-
-import io.netty.handler.codec.http.FullHttpRequest;
 
 /**
  * webApplicationContext加载后，对org.zhsq.mvc.handle.annotation.RequestMapping注解
@@ -41,30 +38,59 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 
 	private final Map<Class<?>, RequestMapping> cachedMappings = new HashMap<Class<?>, RequestMapping>();
 
-	private Object defaultHandler;
-
-	private Object rootHandler;
-
 	private ApplicationContext webApplicationContext;
 
-	private PathMatcher pathMatcher = new AntPathMatcher();
-
 	private boolean useDefaultSuffixPattern = true;
+	
 	private boolean lazyInitHandlers = false;
 
-	private final Map<String, Object> handlerMap = new LinkedHashMap<String, Object>(100);
+	//存放所有webApplicationContext中被@RequestMapping 注解的class
+	private final Map<String, Object> typeMapping = new LinkedHashMap<String, Object>(100);
+	//存放所有webApplicationContext中被@RequestMapping 注解的Method
+	private Map<String, Method> methodMapping = new HashMap<String, Method>(100);
 
 	@Override
 	public void afterPropertiesSet() {
-		String[] beanNames = webApplicationContext.getBeanDefinitionNames();
-		for (String beanName : beanNames) {
-			String[] urls = determineUrlsForHandler(beanName);
-			if (!ObjectUtils.isEmpty(urls)) {
-				// URL paths found: Let's consider it a handler.
-				registerHandler(urls, beanName);
+		//获取webApplicationContext中所有被@RequestMapping注解的bean
+		Map<String, Object> map = webApplicationContext.getBeansWithAnnotation(RequestMapping.class);
+
+		for (Object bean : map.values()) {
+			Class<?> clazz = bean.getClass();
+
+			RequestMapping mappingTypeInfo = clazz.getAnnotation(RequestMapping.class);
+			//获取@RequestMapping注解的bean 的所有@RequestMapping注解的path
+			String[] typeLevelPaths = mappingTypeInfo.value();
+			for(int i = 0; i <typeLevelPaths.length; i++){
+				if (!typeLevelPaths[i].startsWith("/")){
+					typeLevelPaths[i] = "/"+typeLevelPaths[i];
+				}
+				if (typeLevelPaths[i].endsWith("/")){
+					typeLevelPaths[i] = typeLevelPaths[i].substring(0, typeLevelPaths[i].length()-1);
+				}
 			}
-			else {
-				LOGGER.debug("Rejected bean name {}: no URL paths identified",beanName);
+
+			//获取@RequestMapping注解的bean所有的方法
+			Method[] methods = clazz.getDeclaredMethods();
+			for (Method method : methods) {
+				if (method.isAnnotationPresent(RequestMapping.class)) {
+					RequestMapping mappingMethodInfo = method.getAnnotation(RequestMapping.class);
+					String[] methodLevelPath = mappingMethodInfo.value();
+					//缓存urlPath对应的Method
+					setUrlToMethodMap(typeLevelPaths,methodLevelPath,method,bean);
+				}
+			}
+		}
+	}
+
+
+	private void setUrlToMethodMap(String[] typeLevelPaths, String[] methodLevelPaths, Method method, Object bean) {
+		for (String typeLevelPath : typeLevelPaths) {
+			for (String methodLevelPath : methodLevelPaths) {
+				if (!methodLevelPath.startsWith("/")) {
+					methodLevelPath = "/"+methodLevelPath;
+				}
+				methodMapping.put(typeLevelPath+methodLevelPath, method);
+				typeMapping.put(typeLevelPath+methodLevelPath, bean);
 			}
 		}
 	}
@@ -168,7 +194,7 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 	}
 
 	public PathMatcher getPathMatcher() {
-		return this.pathMatcher;
+		return new AntPathMatcher();
 	}
 
 	protected void addUrlsForPath(Set<String> urls, String path) {
@@ -199,7 +225,7 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 			}
 		}
 
-		Object mappedHandler = this.handlerMap.get(urlPath);
+		Object mappedHandler = this.typeMapping.get(urlPath);
 		if (mappedHandler != null) {
 			if (mappedHandler != resolvedHandler) {
 				throw new IllegalStateException(
@@ -209,14 +235,12 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 		else {
 			if ("/".equals(urlPath)) {
 				LOGGER.debug("Root mapping to {}",getHandlerDescription(handler));
-				setRootHandler(resolvedHandler);
 			}
 			else if ("/*".equals(urlPath)) {
 				LOGGER.debug("Default mapping to {}",getHandlerDescription(handler));
-				setDefaultHandler(resolvedHandler);
 			}
 			else {
-				this.handlerMap.put(urlPath, resolvedHandler);
+				this.typeMapping.put(urlPath, resolvedHandler);
 				LOGGER.debug("Mapped URL path {} onto {}",urlPath,getHandlerDescription(handler));
 			}
 		}
@@ -226,22 +250,17 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 		return "handler " + (handler instanceof String ? "'" + handler + "'" : "of type [" + handler.getClass() + "]");
 	}
 
-	public void setDefaultHandler(Object defaultHandler) {
-		this.defaultHandler = defaultHandler;
-	}
-
-	public void setRootHandler(Object rootHandler) {
-		this.rootHandler = rootHandler;
-	}
-
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		webApplicationContext = applicationContext;
 	}
 
 
-	public Object getHandler(String requestUri) {
-		return handlerMap.get(requestUri);
+	public Method getMethodHandler(String requestUri) {
+		return methodMapping.get(requestUri);
 	}
 
+	public Object getTypeHandler(String uri) {
+		return typeMapping.get(uri);
+	}
 }

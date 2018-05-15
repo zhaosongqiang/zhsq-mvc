@@ -10,13 +10,17 @@ import org.zhsq.mvc.handle.annotation.RequestMapping;
  * @since 1.0
  */
 @Controller
-@RequestMapping("/test")
+@RequestMapping("/zsq")
 public class TestController {
 
 	@RequestMapping("hello")
-	public String teString () {
-		System.out.println("hello");
-		return "zsq";
+	public String hello () {
+		return "hello:zsq";
+	}
+
+	@RequestMapping("welcome")
+	public String welcome () {
+		return "welcome to use the Zhsq-mvc fremawork";
 	}
 
 }

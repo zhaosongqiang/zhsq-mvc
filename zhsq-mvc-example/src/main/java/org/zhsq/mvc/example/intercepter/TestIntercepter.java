@@ -15,7 +15,6 @@ public class TestIntercepter implements HttpIntercepter {
 
 	@Override
 	public boolean intercept(FullHttpRequest request, FullHttpResponse response) {
-		System.out.println("org.zhsq.mvc.web.intercepter.HttpIntercepter");
 		return true;
 	}
 
