@@ -12,10 +12,16 @@ import org.zhsq.mvc.handle.annotation.RequestMapping;
 @Controller
 @RequestMapping("/zsq")
 public class TestController {
+	
+	
+	public TestController () {
+		
+	}
+	
 
 	@RequestMapping("hello")
-	public String hello () {
-		return "hello:zsq";
+	public String hello (String name,String age) {
+		return "hello:"+name;
 	}
 
 	@RequestMapping("welcome")
