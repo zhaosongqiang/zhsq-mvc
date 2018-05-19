@@ -172,9 +172,6 @@ public class Student {
 		this.teacher = teacher;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "Student [name=" + name + ", b=" + b + ", bs=" + bs + ", i=" + i + ", is=" + is + ", f=" + f + ", fs="

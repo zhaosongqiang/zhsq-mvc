@@ -42,9 +42,13 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 
 	private boolean lazyInitHandlers = false;
 
-	//存放所有webApplicationContext中被@RequestMapping 注解的class
+	/**
+	 * 存放所有webApplicationContext中被@RequestMapping 注解的class
+	 */
 	private final Map<String, Object> typeMapping = new LinkedHashMap<String, Object>(100);
-	//存放所有webApplicationContext中被@RequestMapping 注解的Method
+	/**
+	 * 存放所有webApplicationContext中被@RequestMapping 注解的Method
+	 */
 	private Map<String, Method> methodMapping = new HashMap<String, Method>(100);
 
 	@Override
@@ -132,7 +136,6 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 			}
 		}
 		else if (AnnotationUtils.findAnnotation(handlerType, Controller.class) != null) {
-			// @RequestMapping to be introspected at method level
 			return determineUrlsForHandlerMethods(handlerType, false);
 		}
 		else {
@@ -156,20 +159,18 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 				@Override
 				public void doWith(Method method) {
 					RequestMapping mapping = AnnotationUtils.findAnnotation(method, RequestMapping.class);
-					if (mapping != null) {
-						String[] mappedPatterns = mapping.value();
-						if (mappedPatterns.length > 0) {
-							for (String mappedPattern : mappedPatterns) {
-								if (!hasTypeLevelMapping && !mappedPattern.startsWith("/")) {
-									mappedPattern = "/" + mappedPattern;
-								}
-								addUrlsForPath(urls, mappedPattern);
+					String[] mappedPatterns = mapping.value();
+					if (mappedPatterns.length > 0) {
+						for (String mappedPattern : mappedPatterns) {
+							if (!hasTypeLevelMapping && !mappedPattern.startsWith("/")) {
+								mappedPattern = "/" + mappedPattern;
 							}
+							addUrlsForPath(urls, mappedPattern);
 						}
-						else if (hasTypeLevelMapping) {
-							// empty method-level RequestMapping
-							urls.add(null);
-						}
+					}
+					else if (hasTypeLevelMapping) {
+						// empty method-level RequestMapping
+						urls.add(null);
 					}
 				}
 			}, ReflectionUtils.USER_DECLARED_METHODS);
@@ -255,7 +256,7 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 
 	public Method getMethodHandler(String requestUri) {
 		String uri = "";
-		if (requestUri.indexOf("?") > 0) {
+		if (requestUri.indexOf("?") > -1) {
 			uri = requestUri.substring(0, requestUri.indexOf("?"));
 		} else {
 			uri = requestUri;
@@ -265,7 +266,7 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 
 	public Object getTypeHandler(String requestUri) {
 		String uri = "";
-		if (requestUri.indexOf("?") > 0) {
+		if (requestUri.indexOf("?") > -1) {
 			uri = requestUri.substring(0, requestUri.indexOf("?"));
 		} else {
 			uri = requestUri;

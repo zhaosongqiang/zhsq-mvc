@@ -1,5 +1,6 @@
 package org.zhsq.mvc.handle.dispatcer;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -29,10 +30,11 @@ import io.netty.util.CharsetUtil;
  * @date 2018年5月11日
  * @since 1.0
  */
-public class HttpRequestDefaultDispatcher implements HttpDispatcher, ApplicationContextAware {
+public class HttpRequestDefaultDispatcher implements HttpDispatcher, ApplicationContextAware, Serializable {
 
-	private ApplicationContext webApplicationContext;
-	private DefaultAnnotationHandlermapping handlermapping;
+	private static final long serialVersionUID = -6650668113850987221L;
+	private transient ApplicationContext webApplicationContext;
+	private transient DefaultAnnotationHandlermapping handlermapping;
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestDefaultDispatcher.class);
 
 	/**
@@ -42,11 +44,11 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 	/**
 	 * 为当前调度器配置拦截器
 	 */
-	private List<HttpIntercepter> interceptors;
+	private transient List<HttpIntercepter> interceptors;
 	/**
 	 * 为当前调度器配置过滤器
 	 */
-	private List<HttpFilter> filters;
+	private transient List<HttpFilter> filters;
 
 
 	public String getPrefix() {
@@ -93,7 +95,7 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 				handlermapping = 
 						webApplicationContext.getBean(DefaultAnnotationHandlermapping.class);
 			} else {
-				LOGGER.error("获取hander处理器失败，因为没有对应的webApplicationContext");
+				LOGGER.error("获取hander处理器失败，因为没有找到对应的webApplicationContext:",webApplicationContext);
 				response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
@@ -109,7 +111,6 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 		//TODO 解析参数值
 		
 		
-		
 		try {
 			Object result = handlerMethodToInvoke.invoke(handlerType, args);
 			response.headers().set("Content-Type", "text/html;charset=UTF-8");
@@ -118,7 +119,6 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 			response.content().writeBytes(buffer);
 			buffer.release();
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			System.out.println(e);
 			//TODO 将异常抛给框架使用者
 		}
 	}

@@ -24,10 +24,9 @@ class WebApplicationContextLoaderTask implements Runnable {
 	@Override
 	public void run() {
 		// 初始化web ApplicationContext 不能影响root ApplicationContext的加载
-		System.out.println("===========================================================================================");
-		System.out.println("===============欢迎使用Zhsq-mvc框架 https://github.com/zhaosongqiang/zhsq-mvc.git===============");
-		System.out.println("===========================================================================================");
-
+		System.out.println("*****************************************************************************************");
+		System.out.println("**************欢迎使用Zhsq-mvc框架 :https://github.com/zhaosongqiang/zhsq-mvc.git*************");
+		System.out.println("*****************************************************************************************");
 		ZhsqWebApplicationContext context = new ZhsqWebApplicationContext(rootApplicationContext, configLocation);
 
 		//给虚拟机添加一个钩子，在虚拟机准备停止的时候关闭 WebApplicationContext

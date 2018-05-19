@@ -1,9 +1,15 @@
 package org.zhsq.mvc.handle.argumentresolver;
 
+/**
+ * @author zhaosq
+ * @date 2018年5月19日
+ * @since 1.0
+ */
 public class ArgResolverFactory {
 
 	private static final String APPLICATION_JSON_RESOLVER = "application/json";
 
+	private ArgResolverFactory () {}
 
 
 	public static ArgResolver createResolver(String resolve) {
