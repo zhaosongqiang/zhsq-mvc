@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.asm.ClassReader;
 import org.springframework.asm.ClassVisitor;
 import org.springframework.asm.Label;
@@ -18,6 +20,9 @@ import org.springframework.asm.SpringAsmInfo;
 import org.springframework.asm.Type;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.util.ClassUtils;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.LinkedTreeMap;
 
 import io.netty.handler.codec.http.FullHttpRequest;
 
@@ -29,22 +34,85 @@ import io.netty.handler.codec.http.FullHttpRequest;
  */
 public class ApplicationjsonResolver implements ArgResolver {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationjsonResolver.class);
 
 	private final Map<Class<?>, Map<Member, String[]>> parameterNamesCache =
 			new ConcurrentHashMap<Class<?>, Map<Member, String[]>>(32);
 
 	private static final Map<Member, String[]> NO_DEBUG_INFO_MAP = Collections.emptyMap();
 
-
 	@Override
 	public Object[] doResolve(FullHttpRequest request, Method handlerMethod) {
+		//获取request中的json参数
 		byte[] args = new byte[request.content().capacity()];
 		request.content().readBytes(args);
 		String jsonContent = new String (args);
-		Map<String, Object> paramMap = new HashMap<String, Object>();
 
 		//将json解析成为Map
+		Map<String, Object> paramMap =GsonBuilderHodler.GSONBUILDER.create().fromJson(jsonContent, Map.class);
+		//获取paramNames
+		String[] paramNames = getParamNames(handlerMethod);
+		Parameter[] params = handlerMethod.getParameters();
 
+		Object[] argsResult = new Object[paramNames.length];  
+
+		if (paramNames.length != params.length ) {
+			LOGGER.error("在解析方法：{}时获取参数名:{},参数:{},参数名和参数个数对应不上",handlerMethod.toString(), paramNames, params);
+		}
+
+		for (int i = 0; i < params.length; i ++ ) {
+			//设置参数
+			argsResult[i] = getParam(params[i], paramMap, paramNames[i]);
+		}
+		return argsResult;
+	}
+
+
+
+	private Object getParam(Parameter parameter, Map<String, Object> paramMap, String paramName) {
+		String paramTypeName = parameter.getParameterizedType().getTypeName();
+		Class<?> paramType = (Class<?>) parameter.getParameterizedType();
+		//参数默认值解析四种类型 com.google.gson.internal.LinkedTreeMap<K, V>, Duble, Boolean, String，其余给使用者提供自定义参数解析器
+		Object param = paramMap.get(paramName);
+
+		if (param instanceof Boolean) {
+			//Boolean
+			return (boolean) paramMap.get(paramName);
+		}
+
+		if (param instanceof Double) {
+			//Double
+			Double number = (Double) paramMap.get(paramName);
+			if (paramType == int.class || paramTypeName.equals("java.lang.Integer")) {
+				return number.intValue();
+			}
+			if (paramType == float.class || paramTypeName.equals("java.lang.Float")) {
+				return number.floatValue();
+			}
+			return (double) number;
+		}
+
+		if (param instanceof LinkedTreeMap) {
+			//com.google.gson.internal.LinkedTreeMap<K, V> 其他对象,依赖于gson来转换对象
+			LinkedTreeMap<String, Object> map = (LinkedTreeMap<String, Object>) paramMap.get(paramName);
+			return GsonBuilderHodler.GSONBUILDER.create().fromJson(map.toString(), paramType);
+		}
+
+		if (paramTypeName.equals("java.lang.String")) {
+			//String
+			return paramMap.get(paramName);
+		}
+
+		//TODO 给使用者自定义类型 参数类型解析器
+
+
+		LOGGER.error("json参数中包含Zhsq-mvc框架无法解析的数据类型:"+paramTypeName.toString());
+		return null;
+	}
+
+
+
+	private String[] getParamNames(Method handlerMethod) {
 		Method originalMethod = BridgeMethodResolver.findBridgedMethod(handlerMethod);
 		Class<?> declaringClass = originalMethod.getDeclaringClass();
 		Map<Member, String[]> map = this.parameterNamesCache.get(declaringClass);
@@ -52,31 +120,17 @@ public class ApplicationjsonResolver implements ArgResolver {
 			map = inspectClass(declaringClass);
 			this.parameterNamesCache.put(declaringClass, map);
 		}
-		if (map != NO_DEBUG_INFO_MAP) {
-			return map.get(originalMethod);
+		if (map == NO_DEBUG_INFO_MAP) {
+			return new String[0];
 		}
-		return null;
-
-		//
-		//		Parameter[] params = handlerMethod.getParameters();
-		//		for (Parameter parm : params) {
-		//			System.out.println(parm.getName());
-		//
-		//
-		//		}
-
+		return map.get(originalMethod);
 	}
 
 
 	private Map<Member, String[]> inspectClass(Class<?> clazz) {
 		InputStream is = clazz.getResourceAsStream(ClassUtils.getClassFileName(clazz));
 		if (is == null) {
-			// We couldn't load the class file, which is not fatal as it
-			// simply means this method of discovering parameter names won't work.
-//			if (logger.isDebugEnabled()) {
-//				logger.debug("Cannot find '.class' file for class [" + clazz +
-//						"] - unable to determine constructor/method parameter names");
-//			}
+			LOGGER.debug("未发现类 [{}] - 不能正确获取构造函数参数",clazz);
 			return NO_DEBUG_INFO_MAP;
 		}
 		try {
@@ -86,23 +140,10 @@ public class ApplicationjsonResolver implements ArgResolver {
 			return map;
 		}
 		catch (IOException ex) {
-			
-			
-			System.out.println(ex);
-			
-//			if (logger.isDebugEnabled()) {
-//				logger.debug("Exception thrown while reading '.class' file for class [" + clazz +
-//						"] - unable to determine constructor/method parameter names", ex);
-//			}
+			LOGGER.error("读取类 ["+clazz+"]时不能正确获取构造函数参数", ex);
 		}
 		catch (IllegalArgumentException ex) {
-			
-			System.out.println(ex);
-//			if (logger.isDebugEnabled()) {
-//				logger.debug("ASM ClassReader failed to parse class file [" + clazz +
-//						"], probably due to a new Java class file version that isn't supported yet " +
-//						"- unable to determine constructor/method parameter names", ex);
-//			}
+			LOGGER.error("ASM类加载器加载文件"+clazz+"失败，可能是由于ASM版本号不正确，请确认spring-core的版本不能低于5.0 ", ex);
 		}
 		finally {
 			try {
@@ -114,9 +155,9 @@ public class ApplicationjsonResolver implements ArgResolver {
 		}
 		return NO_DEBUG_INFO_MAP;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Helper class that inspects all methods (constructor included) and then
 	 * attempts to find the parameter names for that member.
@@ -152,9 +193,9 @@ public class ApplicationjsonResolver implements ArgResolver {
 			return ((access & Opcodes.ACC_STATIC) > 0);
 		}
 	}
-	
-	
-	
+
+
+
 	private static class LocalVariableTableVisitor extends MethodVisitor {
 
 		private static final String CONSTRUCTOR = "<init>";
@@ -249,6 +290,8 @@ public class ApplicationjsonResolver implements ArgResolver {
 			return (aType == Type.LONG_TYPE || aType == Type.DOUBLE_TYPE);
 		}
 	}
-	
-	
+
+	private static class GsonBuilderHodler{
+		static final GsonBuilder GSONBUILDER = new GsonBuilder();
+	}
 }
