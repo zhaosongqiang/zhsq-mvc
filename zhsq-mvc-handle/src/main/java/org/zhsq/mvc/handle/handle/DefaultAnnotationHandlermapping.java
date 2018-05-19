@@ -36,12 +36,10 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAnnotationHandlermapping.class);
 
-	private final Map<Class<?>, RequestMapping> cachedMappings = new HashMap<Class<?>, RequestMapping>();
-
 	private ApplicationContext webApplicationContext;
 
 	private boolean useDefaultSuffixPattern = true;
-	
+
 	private boolean lazyInitHandlers = false;
 
 	//存放所有webApplicationContext中被@RequestMapping 注解的class
@@ -103,7 +101,6 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 		RequestMapping mapping = context.findAnnotationOnBean(beanName, RequestMapping.class);
 		if (mapping != null) {
 			// @RequestMapping found at type level
-			this.cachedMappings.put(handlerType, mapping);
 			Set<String> urls = new LinkedHashSet<String>();
 			String[] typeLevelPatterns = mapping.value();
 			if (typeLevelPatterns.length > 0) {
@@ -257,10 +254,22 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 
 
 	public Method getMethodHandler(String requestUri) {
-		return methodMapping.get(requestUri);
+		String uri = "";
+		if (requestUri.indexOf("?") > 0) {
+			uri = requestUri.substring(0, requestUri.indexOf("?"));
+		} else {
+			uri = requestUri;
+		}
+		return methodMapping.get(uri);
 	}
 
-	public Object getTypeHandler(String uri) {
+	public Object getTypeHandler(String requestUri) {
+		String uri = "";
+		if (requestUri.indexOf("?") > 0) {
+			uri = requestUri.substring(0, requestUri.indexOf("?"));
+		} else {
+			uri = requestUri;
+		}
 		return typeMapping.get(uri);
 	}
 }

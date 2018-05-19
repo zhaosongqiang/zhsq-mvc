@@ -10,6 +10,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.BridgeMethodResolver;
+import org.zhsq.mvc.handle.argumentresolver.ArgResolver;
+import org.zhsq.mvc.handle.argumentresolver.ArgResolverFactory;
 import org.zhsq.mvc.handle.filter.HttpFilter;
 import org.zhsq.mvc.handle.handle.DefaultAnnotationHandlermapping;
 import org.zhsq.mvc.handle.intercepter.HttpIntercepter;
@@ -100,10 +102,14 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 		//根据uri获取处理方法
 		Method handlerMethod = handlermapping.getMethodHandler(request.uri());
 		Method handlerMethodToInvoke = BridgeMethodResolver.findBridgedMethod(handlerMethod);
-
-		//TODO 根据URL获取参数
-		Object[] args = new Object[0];
-
+		//获取参数解析策略并解析参数
+		ArgResolver resolver = ArgResolverFactory.createResolver(request.headers().get("Content-Type"));
+		//解析出来的参数名
+		Object[] args = resolver.doResolve(request, handlerMethod);
+		//TODO 解析参数值
+		
+		
+		
 		try {
 			Object result = handlerMethodToInvoke.invoke(handlerType, args);
 			response.headers().set("Content-Type", "text/html;charset=UTF-8");
@@ -112,9 +118,8 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 			response.content().writeBytes(buffer);
 			buffer.release();
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-
+			System.out.println(e);
 			//TODO 将异常抛给框架使用者
-
 		}
 	}
 

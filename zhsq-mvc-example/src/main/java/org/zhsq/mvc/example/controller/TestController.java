@@ -1,6 +1,9 @@
 package org.zhsq.mvc.example.controller;
 
+import java.util.Date;
+
 import org.springframework.stereotype.Controller;
+import org.zhsq.mvc.example.model.Student;
 import org.zhsq.mvc.handle.annotation.RequestMapping;
 
 /**
@@ -13,9 +16,12 @@ import org.zhsq.mvc.handle.annotation.RequestMapping;
 @RequestMapping("/zsq")
 public class TestController {
 
+
+
 	@RequestMapping("hello")
-	public String hello () {
-		return "hello:zsq";
+	public String hello (String name,int age, Integer no, boolean bb, Student student,Date date) {
+		System.out.println(student.toString());
+		return "hello:"+name+","+age+","+no;
 	}
 
 	@RequestMapping("welcome")
