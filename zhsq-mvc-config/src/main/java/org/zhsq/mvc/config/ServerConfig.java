@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.zhsq.mvc.config;
 
 import java.text.SimpleDateFormat;
@@ -104,7 +101,7 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		//校验ip port 以及超时参数
+		//校验ip port
 		if (StringUtil.isNullOrEmpty(ip)) {
 			ip = DEFAULT_IP;
 		}

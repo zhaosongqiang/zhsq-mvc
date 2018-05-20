@@ -25,7 +25,7 @@ public class ArgResolverFactory {
 
 
 	private static class ApplicationjsonResolverHolder{
-		static ArgResolver APPLICATIONJSONRESOLVER = new ApplicationjsonResolver();
+		static final ArgResolver APPLICATIONJSONRESOLVER = new ApplicationjsonResolver();
 	}
 
 }

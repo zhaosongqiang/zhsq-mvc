@@ -43,11 +43,11 @@ public class DefaultAnnotationHandlermapping implements ApplicationContextAware,
 	private boolean lazyInitHandlers = false;
 
 	/**
-	 * 存放所有webApplicationContext中被@RequestMapping 注解的class
+	 * 存放所有webApplicationContext中被@RequestMapping 注解的uri以及对应的class
 	 */
 	private final Map<String, Object> typeMapping = new LinkedHashMap<String, Object>(100);
 	/**
-	 * 存放所有webApplicationContext中被@RequestMapping 注解的Method
+	 * 存放所有webApplicationContext中被@RequestMapping 注解的uri以及对应Method
 	 */
 	private Map<String, Method> methodMapping = new HashMap<String, Method>(100);
 

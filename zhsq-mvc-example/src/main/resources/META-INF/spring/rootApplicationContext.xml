@@ -10,25 +10,14 @@
 	OF ANY KIND, either express or implied. See the License for the specific 
 	language governing permissions and limitations under the License. -->
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.springframework.org/schema/beans" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
-	xmlns:zhsq="http://www.zsq.com/schema/zhsq"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:zhsq="http://www.zsq.com/schema/zhsq"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
-       http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
        http://www.zsq.com/schema/zhsq http://www.zsq.com/schema/zhsq.xsd ">
 
-
-	<!-- <dubbo:application name="demo-consumer" /> -->
-
-	<!-- <dubbo:registry address="multicast://224.5.6.7:1234" /> -->
-
-
-	<!-- <dubbo:reference id="demoService" check="false" -->
-	<!-- interface="com.alibaba.dubbo.demo.DemoService" /> -->
 
 	<bean id="WebApplicationContextLoaderConfig"
 		class="org.zhsq.mvc.web.suport.WebApplicationContextLoaderConfig">
 		<property name="configLocation" value="classpath*:mvcconfig/zhsqMvc.xml" />
 	</bean>
 
-	<!-- <zhsq:server ip="127.0.0.1" port="80" /> -->
 </beans>

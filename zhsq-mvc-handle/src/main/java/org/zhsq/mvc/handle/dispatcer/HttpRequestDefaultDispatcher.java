@@ -78,7 +78,6 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 	@Override
 	public void doDispatcher(FullHttpRequest request, FullHttpResponse response) {
 
-
 		boolean checkResult = doIntercepterAndFiler(request, response);
 
 		if (!checkResult) {
@@ -95,25 +94,30 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 				handlermapping = 
 						webApplicationContext.getBean(DefaultAnnotationHandlermapping.class);
 			} else {
-				LOGGER.error("获取hander处理器失败，因为没有找到对应的webApplicationContext:",webApplicationContext);
+				LOGGER.error("获取hander处理器失败，因为没有找到对应的webApplicationContext:{}",webApplicationContext);
 				response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+				return ;
 			}
 		}
 		//根据uri获取处理类
 		Object handlerType = handlermapping.getTypeHandler(request.uri());
 		//根据uri获取处理方法
 		Method handlerMethod = handlermapping.getMethodHandler(request.uri());
+
+		if (handlerType == null || handlerMethod == null) {
+			LOGGER.error("根据uri获取处理类和处理方法失败，因为此uri没有找到对应的@RequestMapping()标注类和方法,uri:{}",request.uri());
+			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+			return ;
+		}
 		Method handlerMethodToInvoke = BridgeMethodResolver.findBridgedMethod(handlerMethod);
 		//获取参数解析策略并解析参数
 		ArgResolver resolver = ArgResolverFactory.createResolver(request.headers().get("Content-Type"));
-		//解析出来的参数名
+		//解析出来的参数
 		Object[] args = resolver.doResolve(request, handlerMethod);
-		//TODO 解析参数值
-		
-		
+
 		try {
 			Object result = handlerMethodToInvoke.invoke(handlerType, args);
-			response.headers().set("Content-Type", "text/html;charset=UTF-8");
+			response.headers().set("Content-Type", "application/json;charset=UTF-8");
 			StringBuilder buf = new StringBuilder(result.toString());
 			ByteBuf buffer = Unpooled.copiedBuffer(buf,CharsetUtil.UTF_8);
 			response.content().writeBytes(buffer);

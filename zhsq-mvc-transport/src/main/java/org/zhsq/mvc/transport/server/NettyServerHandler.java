@@ -35,6 +35,7 @@ class NettyServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 		} else {
 			dispatcherRef.doDispatcher(request, response);
 		}
+
 		ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
 	}
 

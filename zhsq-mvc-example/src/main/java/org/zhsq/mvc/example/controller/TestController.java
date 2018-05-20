@@ -8,7 +8,7 @@ import org.zhsq.mvc.handle.annotation.RequestMapping;
 
 /**
  * 测试   DefaultAnnotationHandlermapping 捕获所有的 @RequestMapping 注解的bean
- * @author zhsq 
+ * @author zhsq
  * @date 2018年5月13日
  * @since 1.0
  */
@@ -17,16 +17,15 @@ import org.zhsq.mvc.handle.annotation.RequestMapping;
 public class TestController {
 
 
-
 	@RequestMapping("hello")
 	public String hello (String name,int age, Integer no, boolean bb, Student student,Date date) {
 		System.out.println(student.toString());
-		return "hello:"+name+","+age+","+no;
+		return "{\"hello\":\""+name+"\"}";
 	}
 
 	@RequestMapping("welcome")
 	public String welcome () {
-		return "welcome to use the Zhsq-mvc fremawork";
+		return "{\"hello\":\"welcome to use the Zhsq-mvc fremawork\"}";
 	}
 
 }
