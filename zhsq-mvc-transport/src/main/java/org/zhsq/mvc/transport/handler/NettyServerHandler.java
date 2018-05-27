@@ -1,4 +1,4 @@
-package org.zhsq.mvc.transport.server;
+package org.zhsq.mvc.transport.handler;
 
 import org.zhsq.mvc.handle.dispatcer.HttpRequestDefaultDispatcher;
 
@@ -18,7 +18,7 @@ import io.netty.util.CharsetUtil;
  * @author zhaosq
  * @date 2018年5月11日
  */
-class NettyServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class NettyServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
 	private HttpRequestDefaultDispatcher dispatcherRef;
 
@@ -35,7 +35,7 @@ class NettyServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 		} else {
 			dispatcherRef.doDispatcher(request, response);
 		}
-
+		
 		ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
 	}
 

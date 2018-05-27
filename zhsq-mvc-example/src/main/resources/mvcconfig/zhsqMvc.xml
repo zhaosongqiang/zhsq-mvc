@@ -6,7 +6,7 @@
 
 	<bean id="testController" class="org.zhsq.mvc.example.controller.TestController" />
 
-	<zhsq:server ip="127.0.0.1" port="80" dispatcherRef="dispatcher" />
+	<zhsq:server ip="127.0.0.1" port="8033" dispatcherRef="dispatcher" />
 
 	<bean id="testIntercepter" class="org.zhsq.mvc.example.intercepter.TestIntercepter" />
 	<bean id="testFilter" class="org.zhsq.mvc.example.filter.TestFilter" />

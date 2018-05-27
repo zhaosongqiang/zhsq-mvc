@@ -18,7 +18,7 @@ public class TestController {
 
 
 	@RequestMapping("hello")
-	public String hello (String name,int age, Integer no, boolean bb, Student student,Date date) {
+	public String hello (String name,int age, Integer no, boolean bb, Student student) {
 		System.out.println(student.toString());
 		return "{\"hello\":\""+name+"\"}";
 	}
