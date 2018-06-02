@@ -12,13 +12,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class Start {
 
-	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 
-		System.setProperty("java.net.preferIPv4Stack", "true");
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"META-INF/spring/*.xml"});
 		context.start();
-
 	}
 
 }

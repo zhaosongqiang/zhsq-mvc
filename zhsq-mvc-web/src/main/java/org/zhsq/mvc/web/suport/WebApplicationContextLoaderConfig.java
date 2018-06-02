@@ -1,6 +1,5 @@
 package org.zhsq.mvc.web.suport;
 
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -14,7 +13,7 @@ import org.springframework.util.StringUtils;
  * @date 2018年5月13日
  * @since 1.0
  */
-public class WebApplicationContextLoaderConfig implements DisposableBean, ApplicationListener<ContextRefreshedEvent> {
+public class WebApplicationContextLoaderConfig implements ApplicationListener<ContextRefreshedEvent> {
 
 	@NonNull
 	private String configLocation;
@@ -25,11 +24,6 @@ public class WebApplicationContextLoaderConfig implements DisposableBean, Applic
 
 	public void setConfigLocation(String configLocation) {
 		this.configLocation = configLocation;
-	}
-
-	@Override
-	public void destroy() throws Exception {
-		//TODO 在root ApplicationContext中MvcLoaderConfig被销毁时销毁this.applicationContext
 	}
 
 	@Override

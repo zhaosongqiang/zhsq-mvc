@@ -3,6 +3,7 @@ package org.zhsq.mvc.handle.dispatcer;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.BridgeMethodResolver;
+import org.springframework.core.OrderComparator;
 import org.zhsq.mvc.handle.argumentresolver.ArgResolver;
 import org.zhsq.mvc.handle.argumentresolver.ArgResolverFactory;
 import org.zhsq.mvc.handle.filter.HttpFilter;
@@ -131,6 +133,8 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 		//拦截链拦截结果默认为true
 		boolean intercepterd = true;
 		if (interceptors != null && interceptors.size() != 0) {
+			//对interceptors进行排序
+			Collections.sort(interceptors, OrderComparator.INSTANCE);
 			for (HttpIntercepter intercepter : interceptors) {
 				if (!intercepter.intercept(request, response)) {
 					intercepterd = false;
@@ -145,6 +149,8 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 		}
 
 		if (filters != null && filters.size() != 0) {
+			//对filters进行排序
+			Collections.sort(filters, OrderComparator.INSTANCE);
 			//对请求进行过滤
 			for (HttpFilter filter : filters) {
 				filter.doFilter(request, response);
