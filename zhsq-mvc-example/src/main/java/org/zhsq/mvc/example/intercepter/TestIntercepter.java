@@ -18,4 +18,9 @@ public class TestIntercepter implements HttpIntercepter {
 		return true;
 	}
 
+	@Override
+	public int getOrder() {
+		return 0;
+	}
+
 }

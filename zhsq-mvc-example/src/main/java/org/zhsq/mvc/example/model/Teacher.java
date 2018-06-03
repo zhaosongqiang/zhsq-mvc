@@ -42,9 +42,6 @@ public class Teacher {
 		this.age = age;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "Teacher [name=" + name + ", age=" + age + "]";

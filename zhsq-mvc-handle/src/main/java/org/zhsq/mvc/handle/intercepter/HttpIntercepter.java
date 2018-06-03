@@ -1,5 +1,7 @@
 package org.zhsq.mvc.handle.intercepter;
 
+import org.springframework.core.Ordered;
+
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 
@@ -9,7 +11,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
  * @date 2018年5月11日
  * @since 1.0
  */
-public interface HttpIntercepter {
+public interface HttpIntercepter extends Ordered {
 	
 	/**
 	 * 拦截请求

@@ -57,7 +57,7 @@ public class ApplicationjsonResolver implements ArgResolver {
 		Object[] argsResult = new Object[paramNames.length];  
 
 		if (paramNames.length != params.length ) {
-			LOGGER.error("在解析方法：{}时获取参数名:{},参数:{},参数名和参数个数对应不上",handlerMethod.toString(), paramNames, params);
+			LOGGER.error("在解析方法：{}时获取参数名:{},参数:{},参数名和参数个数对应不上",handlerMethod, paramNames, params);
 		}
 
 		for (int i = 0; i < params.length; i ++ ) {
@@ -83,10 +83,10 @@ public class ApplicationjsonResolver implements ArgResolver {
 		if (param instanceof Double) {
 			//Double
 			Double number = (Double) paramMap.get(paramName);
-			if (paramType == int.class || paramTypeName.equals("java.lang.Integer")) {
+			if (paramType == int.class || "java.lang.Integer".equals(paramTypeName)) {
 				return number.intValue();
 			}
-			if (paramType == float.class || paramTypeName.equals("java.lang.Float")) {
+			if (paramType == float.class || "java.lang.Float".equals(paramTypeName)) {
 				return number.floatValue();
 			}
 			return (double) number;
@@ -98,7 +98,7 @@ public class ApplicationjsonResolver implements ArgResolver {
 			return GsonBuilderHodler.GSONBUILDER.create().fromJson(map.toString(), paramType);
 		}
 
-		if (paramTypeName.equals("java.lang.String")) {
+		if ("java.lang.String".equals(paramTypeName)) {
 			//String
 			return paramMap.get(paramName);
 		}
@@ -106,7 +106,7 @@ public class ApplicationjsonResolver implements ArgResolver {
 		//TODO 给使用者自定义类型 参数类型解析器
 
 
-		LOGGER.error("json参数中包含Zhsq-mvc框架无法解析的数据类型:"+paramTypeName.toString());
+		LOGGER.error("json参数中包含Zhsq-mvc框架无法解析的数据类型:{}",paramTypeName);
 		return null;
 	}
 
@@ -117,6 +117,7 @@ public class ApplicationjsonResolver implements ArgResolver {
 		Class<?> declaringClass = originalMethod.getDeclaringClass();
 		Map<Member, String[]> map = this.parameterNamesCache.get(declaringClass);
 		if (map == null) {
+			// *****************通过ClassReader使用自定义Vistor(ParameterNameDiscoveringVisitor)来获取方法的参数名********************
 			map = inspectClass(declaringClass);
 			this.parameterNamesCache.put(declaringClass, map);
 		}
@@ -129,10 +130,6 @@ public class ApplicationjsonResolver implements ArgResolver {
 
 	private Map<Member, String[]> inspectClass(Class<?> clazz) {
 		InputStream is = clazz.getResourceAsStream(ClassUtils.getClassFileName(clazz));
-		if (is == null) {
-			LOGGER.debug("未发现类 [{}] - 不能正确获取构造函数参数",clazz);
-			return NO_DEBUG_INFO_MAP;
-		}
 		try {
 			ClassReader classReader = new ClassReader(is);
 			Map<Member, String[]> map = new ConcurrentHashMap<Member, String[]>(32);
@@ -214,10 +211,6 @@ public class ApplicationjsonResolver implements ArgResolver {
 
 		private boolean hasLvtInfo = false;
 
-		/*
-		 * The nth entry contains the slot index of the LVT table entry holding the
-		 * argument name for the nth parameter.
-		 */
 		private final int[] lvtSlotIndex;
 
 		public LocalVariableTableVisitor(Class<?> clazz, Map<Member, String[]> map, String name, String desc, boolean isStatic) {
@@ -244,10 +237,6 @@ public class ApplicationjsonResolver implements ArgResolver {
 		@Override
 		public void visitEnd() {
 			if (this.hasLvtInfo || (this.isStatic && this.parameterNames.length == 0)) {
-				// visitLocalVariable will never be called for static no args methods
-				// which doesn't use any local variables.
-				// This means that hasLvtInfo could be false for that kind of methods
-				// even if the class has local variable info.
 				this.memberMap.put(resolveMember(), this.parameterNames);
 			}
 		}

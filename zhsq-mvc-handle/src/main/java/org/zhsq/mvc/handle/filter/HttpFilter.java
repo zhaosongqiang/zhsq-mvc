@@ -1,5 +1,7 @@
 package org.zhsq.mvc.handle.filter;
 
+import org.springframework.core.Ordered;
+
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 
@@ -8,7 +10,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
  * @date 2018年5月11日
  * @since 1.0
  */
-public interface HttpFilter {
+public interface HttpFilter extends Ordered {
 
 	/**
 	 * 执行过滤

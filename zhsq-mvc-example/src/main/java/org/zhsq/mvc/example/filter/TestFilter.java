@@ -25,4 +25,9 @@ public class TestFilter implements HttpFilter {
 //		buffer.release();
 	}
 
+	@Override
+	public int getOrder() {
+		return 0;
+	}
+
 }

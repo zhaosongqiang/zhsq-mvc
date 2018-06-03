@@ -1,8 +1,7 @@
-/**
- * 
- */
 package org.zhsq.mvc.config;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -41,7 +40,9 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 	private int bossThreads;
 
 	private int workerThreads;
-	//服务接收请求，后的分派处理器
+	/**
+	 * 服务接收请求，后的分派处理器
+	 */
 	private HttpRequestDefaultDispatcher dispatcherRef;
 
 	public String getName() {
@@ -100,7 +101,7 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		//校验ip port 以及超时参数
+		//校验ip port
 		if (StringUtil.isNullOrEmpty(ip)) {
 			ip = DEFAULT_IP;
 		}
@@ -125,9 +126,7 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 	private void startServer() {
 		nettyServer = new NettyServer(bossThreads, workerThreads, dispatcherRef);
 		nettyServer.bind(ip, port);
-		System.out.println("============================================================");
-		System.out.println("==========请求监听服务绑定成功,监听地址："+ip+":"+port+"==============");
-		System.out.println("============================================================");
+		System.out.println(new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss]").format(new Date()) + "请求监听服务绑定成功,监听地址："+ip+":"+port);
 	}
 
 	private void checkPort() {
@@ -147,9 +146,7 @@ public class ServerConfig extends AbstractConfig implements ApplicationListener<
 			//关闭请求监听服务
 			nettyServer.shutdown();
 			nettyServer = null;
-			System.out.println("============================================================");
-			System.out.println("=========解除请求监听服务绑定成功,监听地址："+ip+":"+port+"============");
-			System.out.println("============================================================");
+			System.out.println(new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss]").format(new Date()) + "解除请求监听服务绑定成功,监听地址："+ip+":"+port);
 		}
 	}
 }

@@ -15,20 +15,13 @@
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<netty.all.version>4.1.22.Final</netty.all.version>
 		<zhsq.mvc.handle.version>0.0.1-SNAPSHOT</zhsq.mvc.handle.version>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-			<version>${netty.all.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>com.zsq.cn</groupId>
 			<artifactId>zhsq-mvc-handle</artifactId>
 			<version>${zhsq.mvc.handle.version}</version>
 		</dependency>
-		
 	</dependencies>
 </project>
