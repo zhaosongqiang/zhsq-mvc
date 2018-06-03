@@ -117,6 +117,7 @@ public class ApplicationjsonResolver implements ArgResolver {
 		Class<?> declaringClass = originalMethod.getDeclaringClass();
 		Map<Member, String[]> map = this.parameterNamesCache.get(declaringClass);
 		if (map == null) {
+			// *****************通过ClassReader使用自定义Vistor(ParameterNameDiscoveringVisitor)来获取方法的参数名********************
 			map = inspectClass(declaringClass);
 			this.parameterNamesCache.put(declaringClass, map);
 		}
