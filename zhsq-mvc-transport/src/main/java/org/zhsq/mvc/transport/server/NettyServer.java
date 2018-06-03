@@ -39,9 +39,11 @@ public class NettyServer {
 			ServerBootstrap sb = new ServerBootstrap();
 			sb.group(bossGroup, workerGroup)
 			.channel(NioServerSocketChannel.class)
-			.option(ChannelOption.SO_BACKLOG, 100)
-//			.handler(new LoggingHandler(LogLevel.INFO))
+			.option(ChannelOption.SO_BACKLOG, 1)
+			//			.option(ChannelOption.SO_SNDBUF, 100)
+			//			.handler(new LoggingHandler(LogLevel.INFO))
 			.childHandler(new DefaultChildHandler(dispatcherRef));
+			//			.childOption(ChannelOption.SO_SNDBUF, 1);
 
 			ChannelFuture future = sb.bind(ip, port).sync();
 			future.awaitUninterruptibly();

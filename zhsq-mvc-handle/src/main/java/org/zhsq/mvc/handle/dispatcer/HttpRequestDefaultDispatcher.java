@@ -15,6 +15,8 @@ import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.OrderComparator;
 import org.zhsq.mvc.handle.argumentresolver.ArgResolver;
 import org.zhsq.mvc.handle.argumentresolver.ArgResolverFactory;
+import org.zhsq.mvc.handle.exception.ExceptionResolver;
+import org.zhsq.mvc.handle.exception.HttpDefaultExceptionResolver;
 import org.zhsq.mvc.handle.filter.HttpFilter;
 import org.zhsq.mvc.handle.handle.DefaultAnnotationHandlermapping;
 import org.zhsq.mvc.handle.intercepter.HttpIntercepter;
@@ -51,6 +53,8 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 	 * 为当前调度器配置过滤器
 	 */
 	private transient List<HttpFilter> filters;
+
+	private transient ExceptionResolver exceptionResolver;
 
 
 	public String getPrefix() {
@@ -108,7 +112,7 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 
 		if (handlerType == null || handlerMethod == null) {
 			LOGGER.error("根据uri获取处理类和处理方法失败，因为此uri没有找到对应的@RequestMapping()标注类和方法,uri:{}",request.uri());
-			response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+			response.setStatus(HttpResponseStatus.BAD_REQUEST);
 			return ;
 		}
 		Method handlerMethodToInvoke = BridgeMethodResolver.findBridgedMethod(handlerMethod);
@@ -117,16 +121,31 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 		//解析出来的参数
 		Object[] args = resolver.doResolve(request, handlerMethod);
 
+		ByteBuf buffer = null;
 		try {
 			Object result = handlerMethodToInvoke.invoke(handlerType, args);
+			//TODO 此处设计不合理，只有在返回数据为json字符串的时候才对，这里应该有不同的返回结果解析器，比如将返回结果解析为application/json，text/html等，
+			//应该让框架使用者在 RequestMappring标注的方法上再添加注解(或者就在RequestMappring注解中)添加返回结果的类型。
 			response.headers().set("Content-Type", "application/json;charset=UTF-8");
 			StringBuilder buf = new StringBuilder(result.toString());
-			ByteBuf buffer = Unpooled.copiedBuffer(buf,CharsetUtil.UTF_8);
+			buffer = Unpooled.copiedBuffer(buf,CharsetUtil.UTF_8);
 			response.content().writeBytes(buffer);
 			buffer.release();
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			//TODO 将异常抛给框架使用者
+			dealException(request, response);
+		} finally {
+			if (buffer != null) {
+				buffer.clear();
+			}
 		}
+	}
+
+	private void dealException(FullHttpRequest request, FullHttpResponse response) {
+		if (exceptionResolver == null) {
+			exceptionResolver = ExceptionResolverHolder.DEFAULT_EXCEPTION_RESOLVER;
+		}
+		exceptionResolver.dealException(request, response);
 	}
 
 	private boolean doIntercepterAndFiler(FullHttpRequest request, FullHttpResponse response) {
@@ -163,4 +182,9 @@ public class HttpRequestDefaultDispatcher implements HttpDispatcher, Application
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		webApplicationContext = applicationContext; 		
 	}
+
+	private static class ExceptionResolverHolder{
+		static ExceptionResolver DEFAULT_EXCEPTION_RESOLVER = new HttpDefaultExceptionResolver();
+	}
+
 }

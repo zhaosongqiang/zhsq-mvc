@@ -1,7 +1,5 @@
 package org.zhsq.mvc.example.controller;
 
-import java.util.Date;
-
 import org.springframework.stereotype.Controller;
 import org.zhsq.mvc.example.model.Student;
 import org.zhsq.mvc.handle.annotation.RequestMapping;

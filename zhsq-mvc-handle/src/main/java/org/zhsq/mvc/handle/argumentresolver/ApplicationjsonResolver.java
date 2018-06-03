@@ -129,10 +129,6 @@ public class ApplicationjsonResolver implements ArgResolver {
 
 	private Map<Member, String[]> inspectClass(Class<?> clazz) {
 		InputStream is = clazz.getResourceAsStream(ClassUtils.getClassFileName(clazz));
-		if (is == null) {
-			LOGGER.debug("未发现类 [{}] - 不能正确获取构造函数参数",clazz);
-			return NO_DEBUG_INFO_MAP;
-		}
 		try {
 			ClassReader classReader = new ClassReader(is);
 			Map<Member, String[]> map = new ConcurrentHashMap<Member, String[]>(32);
