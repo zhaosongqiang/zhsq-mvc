@@ -31,7 +31,7 @@ public class ZhsqWebApplicationContext {
 		webApplicationContext.start();
 
 		//获取beanfactory
-		DefaultListableBeanFactory factory = (DefaultListableBeanFactory) webApplicationContext.getAutowireCapableBeanFactory();
+		DefaultListableBeanFactory factory = (DefaultListableBeanFactory) webApplicationContext.getBeanFactory();
 
 		/**通过beanFactory获取并注册bean*/
 
